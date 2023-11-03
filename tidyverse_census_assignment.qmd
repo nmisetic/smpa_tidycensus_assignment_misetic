@@ -55,12 +55,15 @@ censusvariables <- load_variables(2021, "acs5", cache = TRUE)
 **Q1** What is the Maryland jurisdiction with the lowest median age, according to the ACS 2021 5-year estimates? You will need to find the variable for median age first. 
 
 ```{r}
+medage <- "B06002_001"
 
+#I chose row "B06002_001" because it broke down median age total by US birthplace
 
+get_acs(geography = "county",
+        variables = c(medage),
+        state = "MD")
 
-
-
-
+# After pulling the median age data, I broke it down by county and filtered for Maryland. The data shows that Baltimore city County has the lowest median age.
 ```
 
 
