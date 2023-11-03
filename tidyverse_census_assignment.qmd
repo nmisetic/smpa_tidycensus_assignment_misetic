@@ -90,26 +90,36 @@ For each dataframe, rename the `estimate` column to a meaningful name you've giv
 Which county has the highest percentage of 5-17 year-olds who speak Spanish at home and also speak English very well?
 
 ```{r}
+age <- get_acs(geography = "county",
+        variables = c("age_bracket" = "B06001_003"),
+        state = "MD")
+language <- get_acs(geography = "county",
+        variables = c("english" = "B16004_005"),
+        state = "MD")
 
+#I loaded the data into variables to make the following steps easier
 
+age <- age %>% 
+  rename("age_bracket" = estimate) %>% 
+  select(-variable)
 
+language <- language %>% 
+  rename("english" = estimate) %>% 
+  select(-variable)
+  
 
+# Reloaded the data again to more easily manipulate the columns
 
+english <- left_join(age, language, by = c("NAME", "GEOID")) %>% 
+  mutate(pct_english = english / age_bracket * 100)
 
-
-
-
-
-
-
+# After creating a new table for performing the join, I created a new column to show the %. We can see that Prince George's County has the highest %.
 ```
 
 
 **Q4** Given the counties with the largest percentage of 5-17 year-olds that speak Spanish at home, which county stands out to you in the data as different from the others? How would you describe the top 5 counties? How would you describe Garrett County's numbers?
 
 PUT ANSWER HERE
-
-
 
 **Q5** Pennsylvanians are currently requesting and submitting mail ballots for the November election. You'd like to know more about the people who live in the areas sending in mail ballots. Read in the `zip_totals.csv` file in the data folder containing the number of returned mail ballots per zip code. Then create a dataframe of Pennsylvania ZCTAs that include the following variables from the 2019 ACS: total population and median income. You will need to add `output = "wide"` to the get_acs function so that you get columns for those two variables' estimates and margins of error.
 
