@@ -106,7 +106,6 @@ age <- age %>%
 language <- language %>% 
   rename("english" = estimate) %>% 
   select(-variable)
-  
 
 # Reloaded the data again to more easily manipulate the columns
 
@@ -132,24 +131,36 @@ Join the ZCTA dataframe to the zip totals dataframe and calculate a per capita r
 -   What's the most interesting one from this last result?
 
 ```{r}
+pa_zip_totals <- read_csv("data/pa_zip_totals.csv")
 
+pa_zcta_data <- get_acs(geography = "zcta", 
+                        variables = c(tot_pop = "B01003_001", 
+                                      med_inc = "B19013_001"), 
+                        state = "PA", 
+                        year = 2019, 
+                        output = "wide")
 
+# After loading the data, I performed a function similar to the first question. I included to specify the year 2019 as well.
 
+combined_data <- left_join(pa_zcta_data, pa_zip_totals, by = c("GEOID" = "zip"))
+combined_data <- combined_data %>%
+  mutate(per_capita_rate = (count / tot_popE) * 100)
 
-
-
-
+# The per capita rate has been calculated, and can be seen in the table
 
 ```
+I answered the following questions using the code below:
 
-
+1) Zip code 19436 has the highest rate. 
+2) According to Census Reporter, it is in Montgomery County, median age of 78.6, 67% female, and 100% white.
+3) Of the specified zip codes, only 4 have a median income over $100,000.
+4) 1,242 zip codes have a lower median income than the state figure.
+5) This is an insanely high amount, making up 69% of the counties.
 ```{r}
-
-
-
-
-
-
-
-
+combined_data %>% 
+  filter(count >= 100)
+combined_data %>% 
+  filter(per_capita_rate >= 10)
+combined_data %>% 
+  filter(med_incE<= 68957)
 ```
